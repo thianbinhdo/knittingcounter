@@ -138,6 +138,24 @@
             animation: bounce 0.5s ease;
         }
 
+        .increase-message {
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #dc3545;
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 10px;
+            border: 2px solid #ffc107;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
         @keyframes bounce {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.2); }
@@ -146,7 +164,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🧶 Strickzähler</h1>
+        <h1>Hallo Knitty Miffy ☀️</h1>
         
         <div class="counter-section">
             <div class="counter-label">Aktuelle Reihe</div>
@@ -161,6 +179,7 @@
             <div class="button-group" style="margin-top: 10px;">
                 <button class="btn-danger" onclick="resetRow()">Reihe zurücksetzen</button>
             </div>
+            <div id="increaseMessage" class="increase-message"></div>
             <div id="celebration"></div>
         </div>
 
@@ -181,12 +200,39 @@
         let rowCount = 0;
         let increaseCount = 0;
 
+        // Lade gespeicherte Werte beim Start
+        function loadProgress() {
+            const savedRow = localStorage.getItem('rowCount');
+            const savedIncrease = localStorage.getItem('increaseCount');
+            
+            if (savedRow !== null) {
+                rowCount = parseInt(savedRow);
+            }
+            if (savedIncrease !== null) {
+                increaseCount = parseInt(savedIncrease);
+            }
+        }
+
+        // Speichere Werte
+        function saveProgress() {
+            localStorage.setItem('rowCount', rowCount);
+            localStorage.setItem('increaseCount', increaseCount);
+        }
+
         function updateDisplay() {
             document.getElementById('rowCounter').textContent = rowCount;
             document.getElementById('increaseCounter').textContent = increaseCount;
             
             const progress = (rowCount / 8) * 100;
             document.getElementById('progressBar').style.width = progress + '%';
+            
+            const message = document.getElementById('increaseMessage');
+            if (rowCount === 7) {
+                message.textContent = '🌸 Stricke jetzt eine Zunahme 🌸';
+                message.style.display = 'block';
+            } else {
+                message.style.display = 'none';
+            }
         }
 
         function showCelebration() {
@@ -206,32 +252,39 @@
                 showCelebration();
             }
             
+            saveProgress();
             updateDisplay();
         }
 
         function decrementRow() {
             if (rowCount > 0) {
                 rowCount--;
+                saveProgress();
                 updateDisplay();
             }
         }
 
         function resetRow() {
             rowCount = 0;
+            saveProgress();
             updateDisplay();
         }
 
         function resetIncrease() {
             increaseCount = 0;
+            saveProgress();
             updateDisplay();
         }
 
         function resetAll() {
             rowCount = 0;
             increaseCount = 0;
+            saveProgress();
             updateDisplay();
         }
 
+        // Lade Fortschritt beim Start
+        loadProgress();
         updateDisplay();
     </script>
 </body>
